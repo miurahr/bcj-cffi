@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
 from setuptools import setup
 
 setup(use_scm_version={"local_scheme": "no-local-version"},
-      cffi_modules=["bcj_builder.py:ffibuilder"])
+      package_dir={"": "src"},
+      cffi_modules=["src/bcj/ffi_build.py:ffibuilder"])

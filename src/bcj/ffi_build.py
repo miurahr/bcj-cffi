@@ -2,14 +2,33 @@ import cffi
 
 
 ffibuilder = cffi.FFI()
-ffibuilder.cdef("static size_t bcj_x86( uint8_t *buf, size_t size, uint32_t pos, uint32_t x86_prev_mask);")
-ffibuilder.set_source("bcj._x86", r"""
+ffibuilder.cdef('size_t simple_bcj_x86_decoder(uint8_t*, size_t);')
+ffibuilder.set_source('bcj._x86', r'''
+#include <stdbool.h>
+
+/* Inline functions to access unaligned unsigned 32-bit integers */
+static inline uint32_t get_unaligned_le32(const uint8_t *buf)
+{
+	return (uint32_t)buf[0]
+			| ((uint32_t)buf[1] << 8)
+			| ((uint32_t)buf[2] << 16)
+			| ((uint32_t)buf[3] << 24);
+}
+
+static inline void put_unaligned_le32(uint32_t val, uint8_t *buf)
+{
+	buf[0] = (uint8_t)val;
+	buf[1] = (uint8_t)(val >> 8);
+	buf[2] = (uint8_t)(val >> 16);
+	buf[3] = (uint8_t)(val >> 24);
+}
+
 static inline int bcj_x86_test_msbyte(uint8_t b)
 {
 	return b == 0x00 || b == 0xFF;
 }
 
-static size_t bcj_x86(uint8_t *buf, size_t size, uint32_t pos, uint32_t x86_prev_mask)
+static size_t simple_bcj_x86(uint8_t *buf, size_t size, bool is_encoder)
 {
 	static const bool mask_to_allowed_status[8]
 		= { true, true, true, false, true, false, false, false };
@@ -18,7 +37,7 @@ static size_t bcj_x86(uint8_t *buf, size_t size, uint32_t pos, uint32_t x86_prev
 
 	size_t i;
 	size_t prev_pos = (size_t)-1;
-	uint32_t prev_mask = x86_prev_mask;
+	uint32_t prev_mask = 0;
 	uint32_t src;
 	uint32_t dest;
 	uint32_t j;
@@ -53,7 +72,10 @@ static size_t bcj_x86(uint8_t *buf, size_t size, uint32_t pos, uint32_t x86_prev
 		if (bcj_x86_test_msbyte(buf[i + 4])) {
 			src = get_unaligned_le32(buf + i + 1);
 			while (true) {
-				dest = src - (pos + (uint32_t)i + 5);
+			    if (is_encoder)
+				    dest = src + ((uint32_t)i + 5);
+				else
+				    dest = src - ((uint32_t)i + 5);
 				if (prev_mask == 0)
 					break;
 
@@ -75,7 +97,16 @@ static size_t bcj_x86(uint8_t *buf, size_t size, uint32_t pos, uint32_t x86_prev
 	}
 
 	prev_pos = i - prev_pos;
-	x86_prev_mask = prev_pos > 3 ? 0 : prev_mask << (prev_pos - 1);
+	prev_mask = prev_pos > 3 ? 0 : prev_mask << (prev_pos - 1);
 	return i;
 }
-""")
+
+static size_t simple_bcj_x86_decoder(uint8_t *buf, size_t size)
+{
+    return simple_bcj_x86(buf, size, false);
+}
+''')
+
+
+if __name__ == "__main__":    # not when running with setuptools
+    ffibuilder.compile(verbose=True)
