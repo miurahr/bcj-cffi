@@ -14,8 +14,15 @@ except PackageNotFoundError:  # pragma: no-cover
 from bcj._x86 import ffi, lib as bcj_x86
 
 
-def bcj_x86_decode(inbuf: bytes):
+def simple_x86_decode(inbuf: bytes):
     size = len(inbuf)
     buf = ffi.from_buffer(inbuf)
     out_size = bcj_x86.simple_bcj_x86_decoder(buf, size)
+    return ffi.buffer(buf)
+
+
+def x86_decode(inbuf: bytes):
+    size = len(inbuf)
+    buf = ffi.from_buffer(inbuf)
+    out_size = bcj_x86.bcj_x86_decoder(buf, size)
     return ffi.buffer(buf)
