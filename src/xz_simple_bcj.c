@@ -15,11 +15,16 @@ size_t simple_bcj_x86_decoder(uint8_t *buf, size_t size)
 	uint32_t j;
 	uint8_t b;
 
-	if (size <= 4)
-		return 0;
+	if (size <= 4) {
+	    for (i = 0; i < size; ++i)
+		    if ((buf[i] & 0xFE) != 0xE8)
+			    continue;
+        prev_pos = i - prev_pos;
+        prev_mask = prev_pos > 3 ? 0 : prev_mask << (prev_pos - 1);
+		return i;
+    }
 
-	size -= 4;
-	for (i = 0; i < size; ++i) {
+	for (i = 0; i < size - 4; ++i) {
 		if ((buf[i] & 0xFE) != 0xE8)
 			continue;
 
@@ -64,6 +69,11 @@ size_t simple_bcj_x86_decoder(uint8_t *buf, size_t size)
 			prev_mask = (prev_mask << 1) | 1;
 		}
 	}
+	while (i < size)
+		if ((buf[i] & 0xFE) != 0xE8) {
+			++i;
+			continue;
+		}
 
 	prev_pos = i - prev_pos;
 	prev_mask = prev_pos > 3 ? 0 : prev_mask << (prev_pos - 1);
