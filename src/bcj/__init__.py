@@ -18,11 +18,11 @@ def simple_x86_decode(inbuf: bytes):
     size = len(inbuf)
     buf = ffi.from_buffer(inbuf)
     out_size = bcj_x86.simple_bcj_x86_decoder(buf, size)
-    return ffi.buffer(buf)
+    return ffi.buffer(buf), out_size
 
 
 def x86_decode(inbuf: bytes):
     size = len(inbuf)
     buf = ffi.from_buffer(inbuf)
     out_size = bcj_x86.bcj_x86_decoder(buf, size)
-    return ffi.buffer(buf)
+    return ffi.buffer(buf), out_size
