@@ -16,13 +16,6 @@ from bcj._x86 import ffi, lib as bcj_x86
 BUFFER_LENGTH = 4096
 
 
-def simple_x86_decode(inbuf: bytes):
-    size = len(inbuf)
-    buf = ffi.from_buffer(inbuf)
-    out_size = bcj_x86.simple_bcj_x86_decoder(buf, size)
-    return ffi.buffer(buf), out_size
-
-
 class Encoder:
 
     def __init__(self):

@@ -32,16 +32,3 @@ def test_x86_decode(tmp_path):
     m.update(dest)
     assert size == origin
     assert m.digest() == binascii.unhexlify('0e989ba003598803f58708e588640e323e2345eced5518abba78adf909c35b3b')
-
-
-def test_simple_x86_decode(tmp_path):
-    with open(pathlib.Path(__file__).parent.joinpath('data/bcj.bin'), 'rb') as f:
-        src = f.read()
-    origin = len(src)
-    dest, size = bcj.simple_x86_decode(src)
-    with open(tmp_path.joinpath('output.bin'), 'wb') as f:
-        f.write(dest)
-    m = hashlib.sha256()
-    m.update(dest)
-    assert size == origin
-    assert m.digest() == binascii.unhexlify('09198e56abd1037352418279eb51898ab71cc733642b50bcf69d8a723602841e')
