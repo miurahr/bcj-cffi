@@ -24,3 +24,10 @@ static inline int bcj_x86_test_msbyte(uint8_t b)
 {
 	return b == 0x00 || b == 0xFF;
 }
+
+#ifndef simple_x86
+typedef struct {
+	uint32_t prev_mask;
+	uint32_t prev_pos;
+} simple_x86;
+#endif

@@ -1,12 +1,6 @@
 #include "xz_private.h"
 
 
-typedef struct {
-	uint32_t prev_mask;
-	uint32_t prev_pos;
-} simple_x86;
-
-
 static size_t
 x86_code(simple_x86 *simple, uint32_t now_pos, bool is_encoder,
 	 	 uint8_t *buffer, size_t size)
@@ -105,28 +99,22 @@ x86_code(simple_x86 *simple, uint32_t now_pos, bool is_encoder,
 	return buffer_pos;
 }
 
-
-size_t bcj_x86_encoder(uint8_t *buf, size_t size)
+void bcj_x86_simple_x86_init(simple_x86 * simple)
 {
-	simple_x86 *simple = (simple_x86 *)malloc(sizeof(simple_x86));
 	simple->prev_mask = 0;
 	simple->prev_pos = (uint32_t)(-5);
-	size_t now_pos = 0;
+}
 
+size_t bcj_x86_encoder(simple_x86 * simple, uint8_t *buf, size_t size)
+{
+	size_t now_pos = 0;
     size_t pos = x86_code(simple, now_pos, true, buf, size);
-    free(simple);
     return pos;
 }
 
-
-size_t bcj_x86_decoder(uint8_t *buf, size_t size)
+size_t bcj_x86_decoder(simple_x86* simple, uint8_t *buf, size_t size)
 {
-	simple_x86 *simple = (simple_x86 *)malloc(sizeof(simple_x86));
-	simple->prev_mask = 0;
-	simple->prev_pos = (uint32_t)(-5);
 	size_t now_pos = 0;
-
     size_t pos = x86_code(simple, now_pos, false, buf, size);
-    free(simple);
     return pos;
 }
