@@ -104,16 +104,12 @@ void bcj_x86_simple_x86_init(simple_x86 * simple)
 	simple->prev_pos = (uint32_t)(-5);
 }
 
-size_t bcj_x86_encoder(simple_x86 * simple, uint8_t *buf, size_t size)
+size_t bcj_x86_encoder(simple_x86 * simple, uint8_t *buf, size_t pos, size_t size)
 {
-	size_t now_pos = 0;
-    size_t pos = x86_code(simple, now_pos, true, buf, size);
-    return pos;
+    return x86_code(simple, pos, true, buf, size);
 }
 
-size_t bcj_x86_decoder(simple_x86* simple, uint8_t *buf, size_t size)
+size_t bcj_x86_decoder(simple_x86* simple, uint8_t *buf, size_t pos, size_t size)
 {
-	size_t now_pos = 0;
-    size_t pos = x86_code(simple, now_pos, false, buf, size);
-    return pos;
+    return x86_code(simple, pos, false, buf, size);
 }
