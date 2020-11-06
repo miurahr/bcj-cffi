@@ -15,41 +15,35 @@ except PackageNotFoundError:  # pragma: no-cover
 
 from _bcj import ffi, lib
 
-BUFFER_LENGTH = 4096
-
 
 class BCJFilter:
 
-    def __init__(self, func, is_encoder: bool, size: int):
+    def __init__(self, func, is_encoder: bool):
         self.is_encoder = is_encoder
         self.buffer = bytearray()
-        self.state = 0
+        self.state = ffi.new('UInt32 *', 0)
         self.method = func
-        self.stream_size = size
         self.ip = 0
 
     def _x86_code(self):
         size = len(self.buffer)
-        ip = 0
-        buf = ffi.from_buffer(self.buffer)
+        buf = ffi.from_buffer(self.buffer, require_writable=True)
         if self.is_encoder:
             out_size = lib.x86_Convert(buf, size, self.ip, self.state, 1)
         else:
             out_size = lib.x86_Convert(buf, size, self.ip, self.state, 0)
-        result = ffi.buffer(buf)
-        return result[:out_size], out_size
-
-    def _decompress(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
-        self.buffer.extend(data)
-        result, pos = self._method()
-        self.buffer = self.buffer[pos:]
+        result = ffi.buffer(buf)[:out_size]
+        self.ip += out_size
+        self.buffer = self.buffer[out_size:]
         return result
 
-    def _compress(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
+    def _decode(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
         self.buffer.extend(data)
-        result, pos = self._method()
-        self.buffer = self.buffer[pos:]
-        return result
+        return self.method()
+
+    def _encode(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
+        self.buffer.extend(data)
+        return self.method()
 
     def _flush(self):
         return bytes(self.buffer)
@@ -58,10 +52,17 @@ class BCJFilter:
 class BCJDecoder(BCJFilter):
 
     def __init__(self, size: int):
-        super().__init__(self._x86_code, False, size)
+        super().__init__(self._x86_code, False)
+        self.stream_size = size
 
-    def decompress(self, data: Union[bytes, bytearray, memoryview], max_length: int = -1) -> bytes:
-        return self._decompress(data)
+    def decode(self, data: Union[bytes, bytearray, memoryview], max_length: int = -1) -> bytes:
+        if self.ip >= self.stream_size:
+            return b''
+        result = self._decode(data)
+        if self.ip > self.stream_size - 5:
+            result += self.buffer[-5:]
+            self.ip += 5
+        return result
 
 
 class BCJEncoder(BCJFilter):
@@ -69,8 +70,8 @@ class BCJEncoder(BCJFilter):
     def __init__(self):
         super().__init__(self._x86_code, True)
 
-    def compress(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
-        return self._compress(data)
+    def encode(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
+        return self._encode(data)
 
     def flush(self):
         return self._flush()
