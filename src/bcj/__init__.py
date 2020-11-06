@@ -17,13 +17,16 @@ from _bcj import ffi, lib
 
 
 class BCJFilter:
-
-    def __init__(self, func, is_encoder: bool):
+    def __init__(self, func, readahead: int, is_encoder: bool, stream_size: int = 0):
         self.is_encoder = is_encoder
         self.buffer = bytearray()
         self.state = ffi.new('UInt32 *', 0)
-        self.method = func
         self.ip = 0
+        #
+        self._readahead = readahead
+        self.stream_size = stream_size
+        self.method = func
+
 
     def _x86_code(self):
         size = len(self.buffer)
@@ -39,7 +42,10 @@ class BCJFilter:
 
     def _decode(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
         self.buffer.extend(data)
-        return self.method()
+        result = self.method()
+        if self.ip >= self.stream_size - self._readahead:
+            result += self.buffer[-self._readahead:]
+        return result
 
     def _encode(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
         self.buffer.extend(data)
@@ -52,23 +58,16 @@ class BCJFilter:
 class BCJDecoder(BCJFilter):
 
     def __init__(self, size: int):
-        super().__init__(self._x86_code, False)
-        self.stream_size = size
+        super().__init__(self._x86_code, 5, False, size)
 
     def decode(self, data: Union[bytes, bytearray, memoryview], max_length: int = -1) -> bytes:
-        if self.ip >= self.stream_size:
-            return b''
-        result = self._decode(data)
-        if self.ip > self.stream_size - 5:
-            result += self.buffer[-5:]
-            self.ip += 5
-        return result
+        return self._decode(data)
 
 
 class BCJEncoder(BCJFilter):
 
     def __init__(self):
-        super().__init__(self._x86_code, True)
+        super().__init__(self._x86_code, 5, True)
 
     def encode(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
         return self._encode(data)
