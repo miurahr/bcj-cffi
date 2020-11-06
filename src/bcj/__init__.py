@@ -1,3 +1,5 @@
+from typing import Union
+
 try:
     from importlib.metadata import PackageNotFoundError, version  # type: ignore
 except ImportError:
@@ -11,65 +13,64 @@ except PackageNotFoundError:  # pragma: no-cover
     # package is not installed
     __version__ = "unknown"
 
-from bcj._x86 import ffi, lib as bcj_x86
+from _bcj import ffi, lib
 
 BUFFER_LENGTH = 4096
 
 
-class Encoder:
+class BCJFilter:
 
-    def __init__(self):
-        self.simple = ffi.new('simple_x86*')
-        bcj_x86.bcj_x86_simple_x86_init
+    def __init__(self, func, is_encoder: bool, size: int):
+        self.is_encoder = is_encoder
+        self.buffer = bytearray()
+        self.state = 0
+        self.method = func
+        self.stream_size = size
+        self.ip = 0
 
-    def x86_encode(self, inbuf: bytes):
-        out_remaining = len(inbuf)
-        out_size = 0
-        dest = b''
-        while out_remaining > 0:
-            max_length = min(BUFFER_LENGTH, out_remaining, len(inbuf))
-            indata = inbuf[:max_length]
-            out, size = self._x86_encode(indata)
-            out_remaining = out_remaining - size
-            out_size += size
-            dest = dest + out
-            if max_length == len(inbuf):
-                break
-            inbuf = inbuf[size:]
-        return dest, out_size
-
-    def _x86_encode(self, inbuf: bytes):
-        size = len(inbuf)
-        buf = ffi.from_buffer(inbuf)
-        out_size = bcj_x86.bcj_x86_encoder(self.simple, buf, size)
+    def _x86_code(self):
+        size = len(self.buffer)
+        ip = 0
+        buf = ffi.from_buffer(self.buffer)
+        if self.is_encoder:
+            out_size = lib.x86_Convert(buf, size, self.ip, self.state, 1)
+        else:
+            out_size = lib.x86_Convert(buf, size, self.ip, self.state, 0)
         result = ffi.buffer(buf)
         return result[:out_size], out_size
 
+    def _decompress(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
+        self.buffer.extend(data)
+        result, pos = self._method()
+        self.buffer = self.buffer[pos:]
+        return result
 
-class Decoder:
+    def _compress(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
+        self.buffer.extend(data)
+        result, pos = self._method()
+        self.buffer = self.buffer[pos:]
+        return result
+
+    def _flush(self):
+        return bytes(self.buffer)
+
+
+class BCJDecoder(BCJFilter):
+
+    def __init__(self, size: int):
+        super().__init__(self._x86_code, False, size)
+
+    def decompress(self, data: Union[bytes, bytearray, memoryview], max_length: int = -1) -> bytes:
+        return self._decompress(data)
+
+
+class BCJEncoder(BCJFilter):
+
     def __init__(self):
-        self.simple = ffi.new('simple_x86*')
-        bcj_x86.bcj_x86_simple_x86_init
+        super().__init__(self._x86_code, True)
 
-    def x86_decode(self, inbuf: bytes):
-        out_remaining = len(inbuf)
-        out_size = 0
-        dest = b''
-        while out_remaining > 0:
-            max_length = min(BUFFER_LENGTH, out_remaining, len(inbuf))
-            indata = inbuf[:max_length]
-            out, size = self._x86_decode(indata)
-            out_remaining = out_remaining - size
-            out_size += size
-            dest = dest + out
-            if max_length == len(inbuf):
-                break
-            inbuf = inbuf[size:]
-        return dest, out_size
+    def compress(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
+        return self._compress(data)
 
-    def _x86_decode(self, inbuf: bytes):
-        size = len(inbuf)
-        buf = ffi.from_buffer(inbuf)
-        out_size = bcj_x86.bcj_x86_decoder(self.simple, buf, size)
-        result = ffi.buffer(buf)
-        return result[:out_size], out_size
+    def flush(self):
+        return self._flush()
