@@ -25,6 +25,12 @@ Removed
 Security
 --------
 
+`v0.3.1`_
+=========
+
+* Add ARMT, ARM, SPARC, PPC, IA64 codes.
+
+
 `v0.3.0`_
 =========
 
@@ -32,5 +38,6 @@ Security
 
 
 .. History links
-.. _Unreleased: https://github.com/miurahr/py7zr/compare/v0.3.0...HEAD
+.. _Unreleased: https://github.com/miurahr/py7zr/compare/v0.3.1...HEAD
+.. _v0.3.1: https://github.com/miurahr/py7zr/compare/v0.3.0...v0.3.1
 .. _v0.3.0: https://github.com/miurahr/py7zr/compare/v0.1.0...v0.3.0
