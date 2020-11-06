@@ -35,7 +35,7 @@ class BCJFilter:
             out_size = lib.x86_Convert(buf, size, self.ip, self.state, 1)
         else:
             out_size = lib.x86_Convert(buf, size, self.ip, self.state, 0)
-        result = ffi.buffer(buf)[:out_size]
+        result = ffi.buffer(buf, out_size)
         self.ip += out_size
         self.buffer = self.buffer[out_size:]
         return result
@@ -44,12 +44,12 @@ class BCJFilter:
         self.buffer.extend(data)
         result = self.method()
         if self.ip >= self.stream_size - self._readahead:
-            result += self.buffer[-self._readahead:]
-        return result
+            return bytes(result) + self.buffer[-self._readahead:]
+        return bytes(result)
 
     def _encode(self, data: Union[bytes, bytearray, memoryview]) -> bytes:
         self.buffer.extend(data)
-        return self.method()
+        return bytes(self.method())
 
     def _flush(self):
         return bytes(self.buffer)
