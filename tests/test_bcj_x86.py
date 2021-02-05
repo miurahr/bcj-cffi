@@ -1,6 +1,6 @@
 import binascii
-import pathlib
 import hashlib
+import pathlib
 
 import bcj
 
