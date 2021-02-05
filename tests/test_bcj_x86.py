@@ -18,7 +18,6 @@ def test_x86_encode(tmp_path):
     assert m.digest() == binascii.unhexlify('e396dadbbe0be4190cdea986e0ec949b049ded2b38df19268a78d32b90b72d42')
 
 
-
 def test_x86_decode(tmp_path):
     with open(pathlib.Path(__file__).parent.joinpath('data/bcj.bin'), 'rb') as f:
         src = f.read()

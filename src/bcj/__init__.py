@@ -92,6 +92,7 @@ class BCJEncoder(BCJFilter):
     def flush(self):
         return self._flush()
 
+
 class SparcDecoder(BCJFilter):
 
     def __init__(self, size: int):
