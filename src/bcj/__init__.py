@@ -1,11 +1,13 @@
 from typing import Union
 
 try:
-    from importlib.metadata import PackageNotFoundError, version  # type: ignore
+    from importlib.metadata import (PackageNotFoundError,  # type: ignore
+                                    version)
 except ImportError:
-    from importlib_metadata import PackageNotFoundError, version  # type: ignore
+    from importlib_metadata import (PackageNotFoundError,  # type: ignore
+                                    version)
 
-__copyright__ = 'Copyright (C) 2020 Hiroshi Miura'
+__copyright__ = 'Copyright (C) 2020,2021 Hiroshi Miura'
 
 try:
     __version__ = version(__name__)

@@ -1,5 +1,6 @@
-import cffi
 import pathlib
+
+import cffi
 
 ext_dir = pathlib.Path(__file__).parent.joinpath('ext')
 sources = [ext_dir.joinpath(s).as_posix() for s in ['Bra.c', 'Bra86.c', 'BraIA64.c']]
