@@ -13,7 +13,7 @@ except PackageNotFoundError:  # pragma: no-cover
     # package is not installed
     __version__ = "unknown"
 
-from _bcj import ffi, lib
+from _bcj import ffi, lib  # type: ignore
 
 
 class BCJFilter:
@@ -25,7 +25,7 @@ class BCJFilter:
         self.ip = 0
         #
         self._readahead = readahead
-        self.stream_size = stream_size
+        self.stream_size: int = stream_size
         self.method = func
 
     def _arm_code(self, buf, size):
