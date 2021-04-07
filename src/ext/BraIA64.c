@@ -1,9 +1,6 @@
 /* BraIA64.c -- Converter for IA-64 code
 2017-01-26 : Igor Pavlov : Public domain */
 
-#include "Compiler.h"
-
-#include "CpuArch.h"
 #include "Bra.h"
 
 SizeT IA64_Convert(Byte *data, SizeT size, UInt32 ip, int encoding)
