@@ -25,6 +25,19 @@ Removed
 Security
 --------
 
+`v0.5.1`_
+=========
+
+Added
+-----
+* Release 32bit, MacOS Arm binaries.
+
+Changed
+-------
+* Improve release CI/CD script.
+* Make C header code diet by dropping unused part.
+
+
 `v0.5.0`_
 =========
 
@@ -49,7 +62,8 @@ Security
 
 
 .. History links
-.. _Unreleased: https://github.com/miurahr/py7zr/compare/v0.5.0...HEAD
+.. _Unreleased: https://github.com/miurahr/py7zr/compare/v0.5.1...HEAD
+.. _v0.5.1: https://github.com/miurahr/py7zr/compare/v0.5.0...v0.5.1
 .. _v0.5.0: https://github.com/miurahr/py7zr/compare/v0.4.0...v0.5.0
 .. _v0.4.0: https://github.com/miurahr/py7zr/compare/v0.3.1...v0.4.0
 .. _v0.3.1: https://github.com/miurahr/py7zr/compare/v0.3.0...v0.3.1
