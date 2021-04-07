@@ -4,7 +4,7 @@
 #ifndef __BRA_H
 #define __BRA_H
 
-#include "7zTypes.h"
+#include "Arch.h"
 
 EXTERN_C_BEGIN
 
