@@ -5,6 +5,10 @@ BCJ(Branch-Call-Jump) filter for python
 .. image:: https://badge.fury.io/py/bcj-cffi.svg
   :target: https://badge.fury.io/py/bcj-cffi
 
+.. image:: https://img.shields.io/conda/vn/conda-forge/bcj-cffi
+  :alt: Version-Conda
+  :target: https://anaconda.org/conda-forge/bcj-cffi
+
 .. image:: https://github.com/miurahr/bcj-cffi/workflows/Run%20Tox%20tests/badge.svg
   :target: https://github.com/miurahr/bcj-cffi/actions
 
@@ -38,6 +42,11 @@ As usual, you can install bcj-cffi using python standard pip command.
 
     pip install bcj-cffi
 
+Alternatively, you can use conda:
+
+.. code-block::
+
+    conda install -c conda-forge bcj-cffi
 
 License
 =======
