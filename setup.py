@@ -1,4 +1,5 @@
 import os
+
 from setuptools import setup
 from setuptools.command.egg_info import egg_info
 
