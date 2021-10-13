@@ -25,6 +25,18 @@ Removed
 Security
 --------
 
+`v0.5.2`_
+=========
+
+Added
+-----
+* Provide wheels for python 3.10
+
+Changed
+-------
+* Consolidate tox.ini config to pyproject.toml
+* Exclude .github files from source distribution
+
 `v0.5.1`_
 =========
 
@@ -62,7 +74,8 @@ Changed
 
 
 .. History links
-.. _Unreleased: https://github.com/miurahr/py7zr/compare/v0.5.1...HEAD
+.. _Unreleased: https://github.com/miurahr/py7zr/compare/v0.5.2...HEAD
+.. _v0.5.2: https://github.com/miurahr/py7zr/compare/v0.5.1...v0.5.2
 .. _v0.5.1: https://github.com/miurahr/py7zr/compare/v0.5.0...v0.5.1
 .. _v0.5.0: https://github.com/miurahr/py7zr/compare/v0.4.0...v0.5.0
 .. _v0.4.0: https://github.com/miurahr/py7zr/compare/v0.3.1...v0.4.0
