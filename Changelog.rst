@@ -25,6 +25,14 @@ Removed
 Security
 --------
 
+`v0.5.3`_
+=========
+
+Fixed
+-----
+* Dependency error for PyPy3 build.
+   * Dependency for CFFI 0.15.0 for CPython and 0.14.6 for PyPy3
+
 `v0.5.2`_
 =========
 
@@ -36,6 +44,7 @@ Changed
 -------
 * Consolidate tox.ini config to pyproject.toml
 * Exclude .github files from source distribution
+* CFFI dependency for 0.15.0
 
 `v0.5.1`_
 =========
@@ -74,7 +83,8 @@ Changed
 
 
 .. History links
-.. _Unreleased: https://github.com/miurahr/py7zr/compare/v0.5.2...HEAD
+.. _Unreleased: https://github.com/miurahr/py7zr/compare/v0.5.3...HEAD
+.. _v0.5.3: https://github.com/miurahr/py7zr/compare/v0.5.2...v0.5.3
 .. _v0.5.2: https://github.com/miurahr/py7zr/compare/v0.5.1...v0.5.2
 .. _v0.5.1: https://github.com/miurahr/py7zr/compare/v0.5.0...v0.5.1
 .. _v0.5.0: https://github.com/miurahr/py7zr/compare/v0.4.0...v0.5.0
